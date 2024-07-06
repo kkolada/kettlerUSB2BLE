@@ -9,22 +9,22 @@ class KettlerBLE extends EventEmitter {
 		super();
 
 		this.name = "KettlerBLE";
-		process.env['BLENO_DEVICE_NAME'] = this.name; 
+		process.env['BLENO_DEVICE_NAME'] = this.name;
 
 		this.csp = new CyclingPowerService();
-		this.ftms = new FitnessMachineService(serverCallback); 
+		this.ftms = new FitnessMachineService(serverCallback);
 
 		let self = this;
 		console.log(`[${this.name} starting]`);
 
 		bleno.on('stateChange', (state) => {
 			console.log(`[${this.name} stateChange] new state: ${state}`);
-			
+
 			self.emit('stateChange', state);
 
 			if (state === 'poweredOn') {
 				bleno.startAdvertising(self.name, [self.csp.uuid
-				, self.ftms.uuid
+					, self.ftms.uuid
 				]);
 			} else {
 				console.log('Stopping...');
@@ -38,11 +38,11 @@ class KettlerBLE extends EventEmitter {
 
 			if (!error) {
 				bleno.setServices([self.csp
-				, self.ftms
-				], 
-				(error) => {
-					console.log(`[${this.name} setServices] ${(error ? 'error ' + error : 'success')}`);
-				});
+						, self.ftms
+					],
+					(error) => {
+						console.log(`[${this.name} setServices] ${(error ? 'error ' + error : 'success')}`);
+					});
 			}
 		});
 
@@ -77,9 +77,7 @@ class KettlerBLE extends EventEmitter {
 		this.csp.notify(event);
 		this.ftms.notify(event);
 	};
-	
- 
 
 };
 
-module.exports = KettlerBLE;
+module.exports = KettlerBLE;/**/

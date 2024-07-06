@@ -8,32 +8,32 @@ const FitnessMachineStatusCharacteristic = require('./fitness-machine-status-cha
 
 class FitnessMachineService extends Bleno.PrimaryService {
 
-	constructor(callback) {
+  constructor(callback) {
 
-		let controlPoint = new FitnessControlPoint(callback);
-		let indoorBikeData = new IndoorBikeDataCharacteristic();
-		let fitnessMachineStatus = new FitnessMachineStatusCharacteristic()
+    let controlPoint = new FitnessControlPoint(callback);
+    let indoorBikeData = new IndoorBikeDataCharacteristic();
+    let fitnessMachineStatus = new FitnessMachineStatusCharacteristic()
 
-			super({
-				uuid: '1826',
-				characteristics: [
-					new StaticReadCharacteristic('2ACC', 'Fitness Machine Feature', [0x02, 0x44, 0x00, 0x00, 0x08, 0x20, 0x00, 0x00]), // Feature Characteristics
-					controlPoint,
-					indoorBikeData,
-					fitnessMachineStatus,
-					new StaticReadCharacteristic('2AD8', 'SupportedPowerRange', [0x32, 0x00, 0x58, 0x02, 0x05, 0x00]), // SupportedPowerRange (50 - 600 with 5watts step)
-				]
-			});
+    super({
+      uuid: '1826',
+      characteristics: [
+        new StaticReadCharacteristic('2ACC', 'Fitness Machine Feature', [ 0x02, 0x44, 0x00, 0x00, 0x08, 0x20, 0x00, 0x00 ]), // Feature Characteristics
+        controlPoint,
+        indoorBikeData,
+        fitnessMachineStatus,
+        new StaticReadCharacteristic('2AD8', 'SupportedPowerRange', [ 0x32, 0x00, 0x58, 0x02, 0x05, 0x00 ]), // SupportedPowerRange (50 - 600 with 5watts step)
+      ]
+    });
 
-		this.indoorBikeData = indoorBikeData;
-	}
+    this.indoorBikeData = indoorBikeData;
+  }
 
-	/*
-	 * Transfer event from Kettler USB to the given characteristics
-	 */
-	notify(event) {
-		this.indoorBikeData.notify(event);
-	};
+  /*
+   * Transfer event from Kettler USB to the given characteristics
+   */
+  notify(event) {
+    this.indoorBikeData.notify(event);
+  };
 
 }
 

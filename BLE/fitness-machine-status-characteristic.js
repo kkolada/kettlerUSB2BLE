@@ -24,11 +24,11 @@ var StatusOpCode = {
 }
 
 class FitnessMachineStatusCharacteristic extends Bleno.Characteristic {
-  constructor () {
+  constructor() {
     super({
       uuid: '2ADA',
       value: null,
-      properties: ['notify'],
+      properties: [ 'notify' ],
       descriptors: [
         new Bleno.Descriptor({
           // Client Characteristic Configuration
@@ -40,20 +40,26 @@ class FitnessMachineStatusCharacteristic extends Bleno.Characteristic {
     this._updateValueCallback = null
   }
 
-  onSubscribe (maxValueSize, updateValueCallback) {
-    if (DEBUG) console.log('[fitness-machine-status-characteristic.js] - client subscribed')
+  onSubscribe(maxValueSize, updateValueCallback) {
+    if (DEBUG) {
+      console.log('[fitness-machine-status-characteristic.js] - client subscribed')
+    }
     this._updateValueCallback = updateValueCallback
     return this.RESULT_SUCCESS
   }
 
-  onUnsubscribe () {
-    if (DEBUG) console.log('[fitness-machine-status-characteristic.js] - client unsubscribed')
+  onUnsubscribe() {
+    if (DEBUG) {
+      console.log('[fitness-machine-status-characteristic.js] - client unsubscribed')
+    }
     this._updateValueCallback = null
     return this.RESULT_UNLIKELY_ERROR
   }
 
-  notify (event) {
-    if (DEBUG) console.log('[fitness-machine-status-characteristic.js] - notify')
+  notify(event) {
+    if (DEBUG) {
+      console.log('[fitness-machine-status-characteristic.js] - notify')
+    }
     var buffer = new Buffer.from(2)
     // speed + power + heart rate
     buffer.writeUInt8(StatusOpCode.startedResumedUser, 0)
@@ -61,7 +67,9 @@ class FitnessMachineStatusCharacteristic extends Bleno.Characteristic {
     if (this._updateValueCallback) {
       this._updateValueCallback(buffer)
     } else {
-      if (DEBUG) console.log('[fitness-machine-status-characteristic.js] - nobody is listening')
+      if (DEBUG) {
+        console.log('[fitness-machine-status-characteristic.js] - nobody is listening')
+      }
     }
     return this.RESULT_SUCCESS
   }

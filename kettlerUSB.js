@@ -1,10 +1,9 @@
-var $q = require('q');
 var EventEmitter = require('events').EventEmitter;
-var SerialPort = require('serialport');
+var SerialPort = require('serialport').SerialPort;
+const Readline = require('@serialport/parser-readline').ReadlineParser
 var DEBUG = true;
 var MOCKDEBUG = false;
 
-const Readline = SerialPort.parsers.Readline;
 const EOL = '\r\n'; // CRLF
 var portName = '/dev/ttyUSB0';
 
@@ -12,7 +11,7 @@ if (MOCKDEBUG) {
 	const Mock = require('@serialport/binding-mock');
 	SerialPort.Binding = Mock;
 	portName = '/dev/ROBOT';
-	Mock.createPort(portName, {
+	Mock.MockBinding.createPort(portName, {
 		echo: true
 	});
 }
@@ -106,8 +105,8 @@ class kettlerUSB extends EventEmitter {
 			if (Object.keys(data).length > 0)
 				this.emit('data', dataOut);
 		}
-		//                command: es 1
-		// Le dernier chiffre semble etre une touche
+			//                command: es 1
+			// Le dernier chiffre semble etre une touche
 		//response: 00      0       0       175
 		else if (states.length == 4) {
 			// key
@@ -126,13 +125,14 @@ class kettlerUSB extends EventEmitter {
 		console.log('[KettlerUSB] open');
 		this.emit('connecting');
 		// create and open a Serial port
-		this.port = new SerialPort(portName, {
-				baudRate: 9600,
-				autoOpen: false
-			});
+		this.port = new SerialPort({
+			path: portName,
+			baudRate: 9600,
+			autoOpen: false
+		});
 		this.parser = this.port.pipe(new Readline({
-					delimiter: '\r\n'
-				}));
+			delimiter: '\r\n'
+		}));
 		this.parser.on('data', (data) => this.readAndDispatch(data));
 
 		// try open
@@ -159,12 +159,20 @@ class kettlerUSB extends EventEmitter {
 
 	internalOpen() {
 		this.port.open((err) => {
-			if (!err)
+			if (!err) {
 				return;
+			}
 			console.log('[KettlerUSB] port is not open, retry in 10s');
+			console.log('[KettlerUSB] ' + err);
 			setTimeout(() => this.internalOpen(), 10000);
 		});
 	};
+
+	internalClose() {
+		this.stop();
+		this.port.close();
+		this.emit('stop');
+	}
 
 	// let's initialize com with the bike
 
